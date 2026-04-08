@@ -12,7 +12,8 @@ export default function Footer() {
             PNW Volleyball Club
           </p>
           <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">
-            A public-facing recruiting site for athletes and families, with private portal access for club members.
+            A public-facing recruiting site for athletes and families, with private
+            member access available through Sign In.
           </p>
         </div>
 
@@ -35,10 +36,7 @@ export default function Footer() {
           </h4>
           <div className="mt-3 space-y-2 text-sm text-slate-400">
             <p><Link href="/login">Sign In</Link></p>
-            <p>Parent portal</p>
-            <p>Player portal</p>
-            <p>Coach portal</p>
-            <p>Admin portal</p>
+            <p>Current players, families, coaches, and staff</p>
           </div>
         </div>
       </div>

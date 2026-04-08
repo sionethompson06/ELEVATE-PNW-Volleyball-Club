@@ -23,10 +23,12 @@ export default function Hero() {
             </h1>
 
             <p className="mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-              ELEVATE helps athletes grow through intentional coaching, competitive training, and a culture that builds confidence, integrity, and preparation for the next level.
+              ELEVATE helps athletes grow through intentional coaching,
+              competitive training, and a culture that builds confidence,
+              integrity, and preparation for the next level.
             </p>
 
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+            <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
                 href="#tryouts"
                 className="inline-flex items-center justify-center rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_0_28px_rgba(47,109,246,0.24)] transition hover:scale-[1.01]"

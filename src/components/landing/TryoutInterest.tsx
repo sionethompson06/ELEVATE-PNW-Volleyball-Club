@@ -27,7 +27,7 @@ export default function TryoutInterest() {
           </p>
 
           <div className="mt-6 rounded-3xl border border-white/10 bg-[#0b1220]/70 p-6">
-            <p className="text-base font-semibold text-white">Suggested launch fields:</p>
+            <p className="text-base font-semibold text-white">What to be ready for</p>
             <ul className="mt-4 space-y-3 text-sm text-slate-300">
               <li>• Player name and age group</li>
               <li>• Parent contact information</li>
@@ -93,8 +93,8 @@ export default function TryoutInterest() {
             </button>
 
             <p className="text-xs text-slate-500">
-              This is currently a design-stage form. Next, we can connect it to email,
-              Google Forms, Airtable, or a real database.
+              Submit your interest and ELEVATE can follow up with tryout details,
+              season updates, and next steps for your athlete.
             </p>
           </form>
         </div>
