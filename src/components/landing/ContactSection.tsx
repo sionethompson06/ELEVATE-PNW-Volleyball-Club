@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ContactSection() {
   return (
     <section id="contact" className="mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8">
@@ -27,6 +29,21 @@ export default function ContactSection() {
               <p className="mt-1 text-slate-400">Club teams, clinics, and athlete development</p>
             </div>
           </div>
+
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <Link
+              href="#tryouts"
+              className="inline-flex items-center justify-center rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+            >
+              Join Tryout Interest List
+            </Link>
+            <Link
+              href="#programs"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:bg-[#2f6df6]/10 hover:text-[#93c5fd]"
+            >
+              Learn More About Programs
+            </Link>
+          </div>
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#2f6df6]/12 via-[#0f172a] to-[#22c55e]/10 p-8">
@@ -45,6 +62,15 @@ export default function ContactSection() {
             <p className="mt-2 text-sm text-slate-400">
               Schedules, communication, resources, announcements, and club tools stay available through the protected member portal experience.
             </p>
+          </div>
+
+          <div className="mt-8">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
       </div>
