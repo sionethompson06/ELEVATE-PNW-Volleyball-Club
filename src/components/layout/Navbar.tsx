@@ -7,6 +7,7 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "Programs", href: "/#programs" },
   { label: "Portals", href: "/#portals" },
+  { label: "Tryouts", href: "/#tryouts" },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -52,7 +53,7 @@ export default function Navbar() {
           className="inline-flex items-center rounded-lg border border-[#d4af37]/40 px-3 py-2 text-sm text-[#d4af37] md:hidden"
           aria-label="Toggle menu"
         >
-          Menu
+          {open ? "Close" : "Menu"}
         </button>
       </div>
 
