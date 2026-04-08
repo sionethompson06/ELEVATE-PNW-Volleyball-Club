@@ -8,11 +8,12 @@ export default function FounderStory() {
         <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1220]/70">
           <div className="relative aspect-[4/5] w-full">
             <Image
-              src="/images/shawna-thompson.jpg"
-              alt="Shawna Thompson holding a Hawaii flag on a volleyball court"
+              src="/images/shawna.jpg"
+              alt="Shawna Thompson on a volleyball court"
               fill
               className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 40vw"
+              priority
             />
           </div>
         </div>
