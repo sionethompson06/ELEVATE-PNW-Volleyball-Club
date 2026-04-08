@@ -1,45 +1,49 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
-    <footer className="border-t border-[#d4af37]/15 bg-black/70">
+    <footer className="border-t border-white/10 bg-[#05070b]/90">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#d4af37]">
+          <p className="text-lg font-black uppercase tracking-[0.28em] text-[#34d399]">
             ELEVATE
           </p>
-          <h3 className="mt-3 text-xl font-black text-white">
+          <p className="mt-1 text-xs font-medium tracking-[0.18em] text-white/80">
             PNW Volleyball Club
-          </h3>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-neutral-400">
-            A premium, mobile-friendly club platform built for development,
-            communication, and a stronger athlete experience.
+          </p>
+          <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">
+            A public-facing recruiting site for athletes and families, with private portal access for club members.
           </p>
         </div>
 
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-white">
-            Contact
+            Explore
           </h4>
-          <div className="mt-3 space-y-2 text-sm text-neutral-400">
-            <p>Email: info@elevatepnwvolleyball.com</p>
-            <p>Location: Portland Metro / Tigard Area</p>
-            <p>Experience: Club teams, clinics, and development</p>
+          <div className="mt-3 space-y-2 text-sm text-slate-400">
+            <p><Link href="/#about">About</Link></p>
+            <p><Link href="/#programs">Programs</Link></p>
+            <p><Link href="/#coaches">Coaches</Link></p>
+            <p><Link href="/#tryouts">Tryouts</Link></p>
+            <p><Link href="/#contact">Contact</Link></p>
           </div>
         </div>
 
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-white">
-            Club Access
+            Member Access
           </h4>
-          <div className="mt-3 space-y-2 text-sm text-neutral-400">
-            <p>Admin portal</p>
+          <div className="mt-3 space-y-2 text-sm text-slate-400">
+            <p><Link href="/login">Sign In</Link></p>
             <p>Parent portal</p>
-            <p>Coach portal</p>
             <p>Player portal</p>
+            <p>Coach portal</p>
+            <p>Admin portal</p>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-[#d4af37]/10 px-4 py-4 text-center text-xs text-neutral-500">
+      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-slate-500">
         © {new Date().getFullYear()} ELEVATE PNW Volleyball Club. All rights reserved.
       </div>
     </footer>
