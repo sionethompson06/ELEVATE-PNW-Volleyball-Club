@@ -10,7 +10,20 @@ export default function TryoutInterest() {
             Interested in ELEVATE?
           </h2>
           <p className="mt-4 text-slate-400">
-            Join the tryout interest list to receive updates about teams, training opportunities, and upcoming tryout information.
+            ELEVATE’s girls club volleyball season is designed to give athletes a
+            structured, competitive, and development-focused experience from late
+            fall through early summer. Tryouts are typically held in October and
+            November, with team practices beginning in November or December.
+            Tournament competition usually runs from January through the spring and
+            summer, depending on the team’s level and schedule.
+          </p>
+
+          <p className="mt-4 text-slate-400">
+            Our goal is to prepare athletes not only for the demands of the club
+            season, but also for long-term growth, higher levels of competition, and
+            future opportunities in the sport. Families interested in joining
+            ELEVATE are encouraged to complete the tryout interest form to receive
+            updates about teams, training opportunities, and tryout details.
           </p>
 
           <div className="mt-6 rounded-3xl border border-white/10 bg-[#0b1220]/70 p-6">
@@ -28,18 +41,42 @@ export default function TryoutInterest() {
         <div className="rounded-[2rem] border border-white/10 bg-[#0b1220]/70 p-6 sm:p-8">
           <form className="grid gap-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input type="text" placeholder="Player First Name" className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]" />
-              <input type="text" placeholder="Player Last Name" className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]" />
+              <input
+                type="text"
+                placeholder="Player First Name"
+                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
+              />
+              <input
+                type="text"
+                placeholder="Player Last Name"
+                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
+              />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <input type="text" placeholder="Parent/Guardian Name" className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]" />
-              <input type="email" placeholder="Email Address" className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]" />
+              <input
+                type="text"
+                placeholder="Parent/Guardian Name"
+                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
+              />
+              <input
+                type="email"
+                placeholder="Email Address"
+                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
+              />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <input type="text" placeholder="Age Group" className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]" />
-              <input type="text" placeholder="Primary Position" className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]" />
+              <input
+                type="text"
+                placeholder="Age Group"
+                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
+              />
+              <input
+                type="text"
+                placeholder="Primary Position"
+                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
+              />
             </div>
 
             <textarea

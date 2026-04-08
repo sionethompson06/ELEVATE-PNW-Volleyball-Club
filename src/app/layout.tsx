@@ -3,6 +3,13 @@ import "./globals.css";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: "ELEVATE PNW Volleyball Club",
   description:
@@ -13,13 +20,6 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "ELEVATE PNW",
   },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#000000",
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
 };
 
 export default function RootLayout({

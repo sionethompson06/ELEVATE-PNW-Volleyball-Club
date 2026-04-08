@@ -1,25 +1,25 @@
 const programs = [
   {
-    title: "Club Teams",
+    title: "12U Girls",
     description:
-      "Competitive team experiences built around consistency, accountability, and long-term athlete development.",
+      "An early competitive club experience focused on fundamentals, confidence, and long-term athlete development.",
   },
   {
-    title: "Skills Clinics",
+    title: "14U Girls",
     description:
-      "Focused training sessions that build fundamentals, confidence, and volleyball IQ.",
+      "A strong developmental stage where athletes build skills, game understanding, and competitive consistency.",
   },
   {
-    title: "Player Development",
+    title: "16U Girls",
     description:
-      "A long-term training philosophy centered on repetition, accountability, and individual growth.",
+      "Advanced preparation for athletes ready to compete at a higher level and continue progressing toward future opportunities.",
   },
 ];
 
 export default function Programs() {
   return (
     <section id="programs" className="mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8">
-      <div className="max-w-2xl">
+      <div className="max-w-3xl">
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#34d399]">
           Programs
         </p>
@@ -27,7 +27,19 @@ export default function Programs() {
           Competitive opportunities built around athlete growth
         </h2>
         <p className="mt-4 text-slate-400">
-          ELEVATE is designed to offer a structured club experience that helps athletes improve with purpose and compete with confidence.
+          ELEVATE serves 12U, 14U, and 16U girls volleyball athletes who are ready
+          to grow in a competitive, development-focused club environment. Our
+          program is built to provide skill development, team training, and
+          meaningful competition that prepares athletes for success during the club
+          season and beyond.
+        </p>
+        <p className="mt-4 text-slate-400">
+          The girls club volleyball season typically begins in late fall, with
+          tryouts held in October and November, practices starting in November or
+          December, and tournament competition running from January through the
+          spring and summer. ELEVATE is committed to helping athletes train with
+          purpose, compete with confidence, and continue progressing toward the
+          next level.
         </p>
       </div>
 
