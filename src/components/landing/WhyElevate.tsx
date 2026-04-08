@@ -32,7 +32,7 @@ export default function WhyElevate() {
           A club experience built on development, culture, and trust
         </h2>
         <p className="mt-4 text-slate-400">
-          Families are looking for more than a roster spot. They are looking for a place where athletes can improve, compete, and belong.
+          At ELEVATE, we value growth, integrity, discipline, communication, confidence, and love for the game. These values shape the way we train, compete, communicate, and build our club culture.
         </p>
       </div>
 

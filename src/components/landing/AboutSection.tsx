@@ -10,26 +10,22 @@ export default function AboutSection() {
             Built for athletes who want to grow in the right environment
           </h2>
           <p className="mt-4 text-slate-400">
-            ELEVATE was created to give athletes and families a club experience rooted in development, competition, and positive culture.
-          </p>
-          <p className="mt-4 text-slate-400">
-            Our goal is to help players build strong fundamentals, competitive confidence, and a team mindset in an environment that is organized, challenging, and encouraging.
+            ELEVATE’s mission is to help athletes grow through intentional coaching, competitive training, strong communication, and a team culture that builds confidence on and off the court. We are committed to providing every player with skill development, competitive acumen, and elite-level preparation so they can reach their potential, showcase their talent, and prepare for the next level. As an elite volleyball club, we want our athletes to love the sport, compete with integrity, and grow into the best version of themselves as players and people.
           </p>
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#2f6df6]/12 via-[#0f172a] to-[#22c55e]/10 p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#34d399]">
-            Mission
+            Vision
           </p>
           <p className="mt-4 text-lg leading-8 text-slate-200">
-            To help athletes grow through intentional coaching, competitive training,
-            strong communication, and a team culture that builds confidence on and off the court.
+            Our vision is to be an elite volleyball club that develops confident, skilled, and competitive athletes who love the game, compete with integrity, and are prepared to succeed at the next level.
           </p>
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-[#05070b]/60 p-5">
-            <p className="text-sm font-semibold text-white">Placeholder for your founder story</p>
+            <p className="text-sm font-semibold text-white">Founder story placeholder</p>
             <p className="mt-2 text-sm text-slate-400">
-              This is where we can later add your personal reason for starting ELEVATE and what makes your club different.
+              We can replace this with your personal story, why you started ELEVATE, and what you want families to feel when they join the club.
             </p>
           </div>
         </div>

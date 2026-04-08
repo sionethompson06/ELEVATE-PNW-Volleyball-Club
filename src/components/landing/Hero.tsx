@@ -23,9 +23,7 @@ export default function Hero() {
             </h1>
 
             <p className="mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-              ELEVATE PNW Volleyball Club is built for athletes and families seeking
-              intentional coaching, competitive training, and a team culture that helps
-              players grow on and off the court.
+              ELEVATE helps athletes grow through intentional coaching, competitive training, and a culture that builds confidence, integrity, and preparation for the next level.
             </p>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row">
