@@ -15,6 +15,14 @@ export default function FounderStory() {
               sizes="(max-width: 1024px) 100vw, 40vw"
               priority
             />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#05070b]/95 via-[#05070b]/65 to-transparent px-6 pb-6 pt-16">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/95">
+                Coach
+              </p>
+              <p className="mt-1 bg-gradient-to-r from-[#60a5fa] to-[#34d399] bg-clip-text text-2xl font-black text-transparent sm:text-3xl">
+                Shawna Thompson
+              </p>
+            </div>
           </div>
         </div>
 

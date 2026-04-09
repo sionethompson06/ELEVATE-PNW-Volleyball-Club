@@ -1,3 +1,5 @@
+import TryoutInterestForm from "../forms/TryoutInterestForm";
+
 export default function TryoutInterest() {
   return (
     <section id="tryouts" className="mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8">
@@ -39,64 +41,7 @@ export default function TryoutInterest() {
         </div>
 
         <div className="rounded-[2rem] border border-white/10 bg-[#0b1220]/70 p-6 sm:p-8">
-          <form className="grid gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                type="text"
-                placeholder="Player First Name"
-                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-              />
-              <input
-                type="text"
-                placeholder="Player Last Name"
-                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                type="text"
-                placeholder="Parent/Guardian Name"
-                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-              />
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                type="text"
-                placeholder="Age Group"
-                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-              />
-              <input
-                type="text"
-                placeholder="Primary Position"
-                className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-              />
-            </div>
-
-            <textarea
-              placeholder="Tell us about the athlete's experience or interest"
-              rows={5}
-              className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none transition focus:border-[#60a5fa]"
-            />
-
-            <button
-              type="button"
-              className="mt-2 inline-flex justify-center rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95"
-            >
-              Submit Interest
-            </button>
-
-            <p className="text-xs text-slate-500">
-              Submit your interest and ELEVATE can follow up with tryout details,
-              season updates, and next steps for your athlete.
-            </p>
-          </form>
+          <TryoutInterestForm />
         </div>
       </div>
     </section>
