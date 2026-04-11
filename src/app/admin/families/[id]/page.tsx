@@ -161,13 +161,6 @@ export default async function FamilyDetailPage({ params }: PageProps) {
         primary_parent_phone: family.primary_parent_phone || null,
         account_status: family.account_status || null,
         created_at: family.created_at || null,
-        total_players: totalPlayers,
-        assigned_players: assignedPlayers,
-        portal_enabled_count: portalEnabledCount,
-        registration_complete_count: registrationCompleteCount,
-        registration_in_progress_count: registrationInProgressCount,
-        portal_summary: portalSummary,
-        registration_summary: registrationSummary,
       }}
       players={(players ?? []).map((player) => {
         const team = player.current_team_id ? teamById.get(player.current_team_id) : null;
