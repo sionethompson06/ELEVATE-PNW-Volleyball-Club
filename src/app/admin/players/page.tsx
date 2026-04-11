@@ -1,6 +1,19 @@
 import Link from "next/link";
 import { createServerSupabase } from "../../../lib/supabase/server";
 import PlayerAssignmentClient from "../../../components/admin/PlayerAssignmentClient";
+import PlayersAdminClient from "../../../components/admin/PlayersAdminClient";
+
+function extractAgeNumber(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const text = String(value).trim();
+  const match = text.match(/\b(\d{1,2})\s*U?\b/i);
+  return match ? match[1] : null;
+}
+
+function normalizeAgeGroup(value: string | null | undefined): string | null {
+  const age = extractAgeNumber(value);
+  return age ? `${age}U` : null;
+}
 
 export default async function AdminPlayersPage() {
   const supabase = createServerSupabase();
@@ -22,6 +35,7 @@ export default async function AdminPlayersPage() {
           current_team_id,
           created_at,
           families (
+            id,
             family_name,
             primary_parent_name,
             primary_parent_email
@@ -34,12 +48,13 @@ export default async function AdminPlayersPage() {
           id,
           team_name,
           display_name,
+          tier,
+          is_active,
           programs (
             age_group
           )
         `)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false }),
+        .order("display_name", { ascending: true }),
     ]);
 
   if (playersError) {
@@ -58,23 +73,76 @@ export default async function AdminPlayersPage() {
     );
   }
 
-  function getTeamName(teamId: string | null) {
-    if (!teamId) return "Not assigned";
-    const match = (teams ?? []).find((team) => team.id === teamId);
-    return match ? match.display_name || match.team_name : "Assigned";
-  }
-
   const normalizedTeams = (teams ?? []).map((team) => {
     const program = Array.isArray(team.programs) ? team.programs[0] : team.programs;
+    const normalizedTeamAgeGroup =
+      normalizeAgeGroup(program?.age_group) ||
+      normalizeAgeGroup(team.display_name) ||
+      normalizeAgeGroup(team.team_name);
+
     return {
-      ...team,
-      age_group: program?.age_group || null,
+      id: String(team.id),
+      team_name: team.team_name,
+      display_name: team.display_name,
+      tier: team.tier || null,
+      is_active: !!team.is_active,
+      age_group: normalizedTeamAgeGroup,
     };
   });
 
+  function getTeam(teamId: string | null) {
+    if (!teamId) return null;
+    return normalizedTeams.find((team) => team.id === teamId) || null;
+  }
+
+  const playerRows = (players ?? []).map((player) => {
+    const family = Array.isArray(player.families) ? player.families[0] : player.families;
+    const team = getTeam(player.current_team_id);
+
+    return {
+      id: String(player.id),
+      first_name: player.first_name,
+      last_name: player.last_name,
+      age_group: normalizeAgeGroup(player.age_group),
+      school: player.school || null,
+      primary_position: player.primary_position || null,
+      registration_status: player.registration_status || null,
+      payment_status: player.payment_status || null,
+      portal_enabled: !!player.portal_enabled,
+      family_name: family?.family_name || null,
+      family_id: family?.id || null,
+      current_team_name: team ? team.display_name || team.team_name : null,
+      current_team_id: team?.id || null,
+    };
+  });
+
+  const uniqueRawPlayers = (() => {
+    const seen = new Set<string>();
+    return (players ?? [])
+      .filter((player) => {
+        if (seen.has(player.id)) return false;
+        seen.add(player.id);
+        return true;
+      })
+      .map((player) => ({
+        ...player,
+        id: String(player.id),
+        age_group: normalizeAgeGroup(player.age_group),
+      }));
+  })();
+
+  const uniqueTeamsForAssignment = (() => {
+    const seen = new Set<string>();
+    return normalizedTeams.filter((team) => {
+      if (seen.has(team.id)) return false;
+      seen.add(team.id);
+      return true;
+    });
+  })();
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#34d399]">
             Admin
@@ -87,68 +155,18 @@ export default async function AdminPlayersPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <Link href="/admin/families" className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:text-[#93c5fd]">
-            Families
-          </Link>
-          <Link href="/admin/teams" className="rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95">
-            Teams
-          </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/families" className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:text-[#93c5fd]">Families</Link>
+          <Link href="/admin/teams" className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:text-[#93c5fd]">Teams</Link>
+          <Link href="/admin/coaches" className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:text-[#93c5fd]">Coaches</Link>
+          <Link href="/admin/payments" className="rounded-full border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:text-[#93c5fd]">Payments</Link>
+          <Link href="/admin/activity" className="rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-95">Activity</Link>
         </div>
       </div>
 
-      <div className="mt-8 overflow-x-auto rounded-3xl border border-white/10 bg-[#0b1220]/70">
-        <table className="min-w-full text-sm text-white">
-          <thead className="border-b border-white/10 bg-[#05070b]/70 text-left text-slate-300">
-            <tr>
-              <th className="px-4 py-3">Player</th>
-              <th className="px-4 py-3">Age Group</th>
-              <th className="px-4 py-3">School</th>
-              <th className="px-4 py-3">Primary Position</th>
-              <th className="px-4 py-3">Family</th>
-              <th className="px-4 py-3">Current Team</th>
-              <th className="px-4 py-3">Registration</th>
-              <th className="px-4 py-3">Payment</th>
-              <th className="px-4 py-3">Portal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(players ?? []).map((player) => {
-              const family = Array.isArray(player.families)
-                ? player.families[0]
-                : player.families;
+      <PlayersAdminClient players={playerRows} />
 
-              return (
-                <tr key={player.id} className="border-b border-white/5">
-                  <td className="px-4 py-4 font-semibold text-white">
-                    {player.first_name} {player.last_name}
-                  </td>
-                  <td className="px-4 py-4 text-slate-300">{player.age_group || "—"}</td>
-                  <td className="px-4 py-4 text-slate-300">{player.school || "—"}</td>
-                  <td className="px-4 py-4 text-slate-300">{player.primary_position || "—"}</td>
-                  <td className="px-4 py-4 text-slate-300">{family?.family_name || "—"}</td>
-                  <td className="px-4 py-4 text-slate-300">{getTeamName(player.current_team_id)}</td>
-                  <td className="px-4 py-4 text-slate-300">{player.registration_status}</td>
-                  <td className="px-4 py-4 text-slate-300">{player.payment_status}</td>
-                  <td className="px-4 py-4 text-slate-300">
-                    {player.portal_enabled ? "Enabled" : "Not enabled"}
-                  </td>
-                </tr>
-              );
-            })}
-
-            {(players ?? []).length === 0 && (
-              <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-slate-400">
-                  No players created yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <PlayerAssignmentClient players={players ?? []} teams={normalizedTeams} />
+      <PlayerAssignmentClient players={uniqueRawPlayers} teams={uniqueTeamsForAssignment} />
     </section>
   );
 }

@@ -36,7 +36,9 @@ export default async function FamilyDetailPage({ params }: PageProps) {
           school,
           family_id,
           registration_status,
-          portal_enabled
+          payment_status,
+          portal_enabled,
+          current_team_id
         `)
         .eq("family_id", id)
         .order("last_name", { ascending: true }),
@@ -72,29 +74,27 @@ export default async function FamilyDetailPage({ params }: PageProps) {
     );
   }
 
-  const playerIds = (players ?? []).map((player) => player.id);
+  const teamIds = Array.from(
+    new Set(
+      (players ?? [])
+        .map((player) => player.current_team_id)
+        .filter((teamId): teamId is string => Boolean(teamId))
+    )
+  );
 
-  const { data: membershipRows, error: membershipsError } = playerIds.length
+  const { data: teamRows, error: teamsError } = teamIds.length
     ? await supabase
-        .from("team_memberships")
+        .from("teams")
         .select(`
           id,
-          player_id,
-          team_id,
-          status,
-          assigned_at,
-          teams (
-            id,
-            team_name,
-            display_name,
-            tier
-          )
+          team_name,
+          display_name,
+          tier
         `)
-        .in("player_id", playerIds)
-        .order("assigned_at", { ascending: false })
+        .in("id", teamIds)
     : { data: [], error: null };
 
-  if (membershipsError) {
+  if (teamsError) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <Link
@@ -104,34 +104,33 @@ export default async function FamilyDetailPage({ params }: PageProps) {
           ← Back to families
         </Link>
         <p className="mt-6 text-red-400">
-          Failed to load team assignments: {membershipsError.message}
+          Failed to load team assignments: {teamsError.message}
         </p>
       </section>
     );
   }
 
-  const membershipByPlayerId = new Map(
-    (membershipRows ?? []).map((row) => [
-      row.player_id,
+  const teamById = new Map(
+    (teamRows ?? []).map((team) => [
+      team.id,
       {
-        membership_id: row.id,
-        status: row.status,
-        assigned_at: row.assigned_at,
-        team: Array.isArray(row.teams) ? row.teams[0] : row.teams,
+        id: team.id,
+        team_name: team.team_name,
+        display_name: team.display_name,
+        tier: team.tier,
       },
     ])
   );
 
   const totalPlayers = (players ?? []).length;
-  const assignedPlayers = (players ?? []).filter((player) =>
-    membershipByPlayerId.has(player.id)
-  ).length;
+  const assignedPlayers = (players ?? []).filter((player) => !!player.current_team_id).length;
   const portalEnabledCount = (players ?? []).filter((player) => player.portal_enabled).length;
   const registrationCompleteCount = (players ?? []).filter(
     (player) => player.registration_status === "complete"
   ).length;
   const registrationInProgressCount = (players ?? []).filter(
-    (player) => player.registration_status && player.registration_status !== "complete"
+    (player) =>
+      player.registration_status === "in_progress" || player.registration_status === "started"
   ).length;
 
   const portalSummary =
@@ -171,8 +170,7 @@ export default async function FamilyDetailPage({ params }: PageProps) {
         registration_summary: registrationSummary,
       }}
       players={(players ?? []).map((player) => {
-        const membership = membershipByPlayerId.get(player.id);
-        const team = membership?.team;
+        const team = player.current_team_id ? teamById.get(player.current_team_id) : null;
 
         return {
           id: player.id,
@@ -182,7 +180,9 @@ export default async function FamilyDetailPage({ params }: PageProps) {
           primary_position: player.primary_position || null,
           school: player.school || null,
           registration_status: player.registration_status || null,
+          payment_status: player.payment_status || null,
           portal_enabled: !!player.portal_enabled,
+          current_team_id: team?.id || null,
           current_team_name: team?.display_name || team?.team_name || null,
         };
       })}

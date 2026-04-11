@@ -1,177 +1,211 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-type Program = {
+type TeamRow = {
   id: string;
-  name: string;
-  age_group: string;
-};
-
-type Team = {
-  id: string;
-  team_name: string;
-  display_name?: string | null;
-  tier?: string | null;
+  team_name: string | null;
+  display_name: string | null;
+  tier: string | null;
   roster_limit: number | null;
   is_active: boolean;
-  programs:
-    | {
-        id: string;
-        name: string;
-        age_group: string;
-      }
-    | {
-        id: string;
-        name: string;
-        age_group: string;
-      }[]
-    | null;
+  program_name: string | null;
+  program_age_group: string | null;
+  head_coach_profile_id: string | null;
+  assistant_coach_profile_id: string | null;
+  assigned_player_count: number;
 };
 
-const tierOptions = ["Silver", "Gold", "Nationals"];
+type Props = {
+  teams: TeamRow[];
+};
 
-export default function TeamsAdminClient({
-  teams,
-  programs,
-}: {
-  teams: Team[];
-  programs: Program[];
-}) {
-  const [programId, setProgramId] = useState(programs[0]?.id || "");
-  const [tier, setTier] = useState("Silver");
-  const [rosterLimit, setRosterLimit] = useState("");
-  const [message, setMessage] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  async function createTeam() {
-    setSaving(true);
-    setMessage("");
-
-    const res = await fetch("/api/admin/teams", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        programId,
-        tier,
-        rosterLimit,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setMessage(data?.error || "Unable to create team.");
-      setSaving(false);
-      return;
-    }
-
-    setMessage(`Team "${data.team.display_name || data.team.team_name}" created successfully.`);
-    setSaving(false);
-    window.location.reload();
+function getTierClasses(tier: string | null) {
+  switch (tier) {
+    case "Nationals":
+      return "border border-purple-500/30 bg-purple-500/10 text-purple-300";
+    case "Gold":
+      return "border border-amber-500/30 bg-amber-500/10 text-amber-300";
+    case "Silver":
+      return "border border-slate-400/30 bg-slate-400/10 text-slate-300";
+    default:
+      return "border border-white/10 bg-white/[0.04] text-slate-300";
   }
+}
 
-  async function updateTeam(teamId: string, patch: Record<string, unknown>) {
-    setMessage("");
+export default function TeamsAdminClient({ teams }: Props) {
+  const [search, setSearch] = useState("");
+  const [tierFilter, setTierFilter] = useState("all");
+  const [staffingFilter, setStaffingFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("all");
 
-    const res = await fetch(`/api/admin/teams/${teamId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(patch),
+  const tierOptions = useMemo(() => {
+    const values = Array.from(
+      new Set(teams.map((team) => team.tier).filter((value): value is string => Boolean(value)))
+    ).sort();
+    return ["all", ...values];
+  }, [teams]);
+
+  const filteredTeams = useMemo(() => {
+    const searchValue = search.trim().toLowerCase();
+
+    return teams.filter((team) => {
+      const teamLabel = team.display_name || team.team_name || "";
+      const matchesSearch =
+        searchValue.length === 0 ||
+        [teamLabel, team.program_name, team.program_age_group]
+          .filter(Boolean)
+          .some((value) => value!.toLowerCase().includes(searchValue));
+
+      const matchesTier = tierFilter === "all" || team.tier === tierFilter;
+
+      const matchesStaffing =
+        staffingFilter === "all" ||
+        (staffingFilter === "fully_staffed" &&
+          Boolean(team.head_coach_profile_id) &&
+          Boolean(team.assistant_coach_profile_id)) ||
+        (staffingFilter === "head_only" &&
+          Boolean(team.head_coach_profile_id) &&
+          !team.assistant_coach_profile_id) ||
+        (staffingFilter === "needs_head" && !team.head_coach_profile_id);
+
+      const matchesActive =
+        activeFilter === "all" ||
+        (activeFilter === "active" && team.is_active) ||
+        (activeFilter === "inactive" && !team.is_active);
+
+      return matchesSearch && matchesTier && matchesStaffing && matchesActive;
     });
+  }, [teams, search, tierFilter, staffingFilter, activeFilter]);
 
-    const data = await res.json();
+  const visibleTeams = filteredTeams.length;
+  const visiblePlayers = filteredTeams.reduce((sum, team) => sum + team.assigned_player_count, 0);
+  const visibleHeadCoachAssigned = filteredTeams.filter((team) => Boolean(team.head_coach_profile_id)).length;
+  const visibleAssistantCoachAssigned = filteredTeams.filter(
+    (team) => Boolean(team.assistant_coach_profile_id)
+  ).length;
 
-    if (!res.ok) {
-      setMessage(data?.error || "Unable to update team.");
-      return;
-    }
-
-    setMessage(`Team "${data.team.display_name || data.team.team_name}" updated successfully.`);
-    window.location.reload();
-  }
-
-  async function deleteTeam(teamId: string) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this team? This only works if no players are assigned."
-    );
-
-    if (!confirmed) return;
-
-    setMessage("");
-
-    const res = await fetch(`/api/admin/teams/${teamId}`, {
-      method: "DELETE",
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setMessage(data?.error || "Unable to delete team.");
-      return;
-    }
-
-    setMessage(data.message || "Team deleted successfully.");
-    window.location.reload();
+  function resetFilters() {
+    setSearch("");
+    setTierFilter("all");
+    setStaffingFilter("all");
+    setActiveFilter("all");
   }
 
   return (
-    <div className="mt-8">
-      <div className="rounded-3xl border border-white/10 bg-[#0b1220]/70 p-6">
-        <h2 className="text-2xl font-black text-white">Create Team</h2>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <select
-            value={programId}
-            onChange={(e) => setProgramId(e.target.value)}
-            className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white outline-none"
-          >
-            {programs.map((program) => (
-              <option key={program.id} value={program.id}>
-                {program.name} ({program.age_group})
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={tier}
-            onChange={(e) => setTier(e.target.value)}
-            className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white outline-none"
-          >
-            {tierOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-
-          <input
-            value={rosterLimit}
-            onChange={(e) => setRosterLimit(e.target.value)}
-            placeholder="Roster Limit"
-            className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white placeholder:text-slate-500 outline-none"
-          />
+    <>
+      <div className="mt-8 grid gap-4 md:grid-cols-4">
+        <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Visible Teams</p>
+          <p className="mt-3 text-3xl font-black text-white">{visibleTeams}</p>
         </div>
 
-        <div className="mt-6">
-          <button
-            type="button"
-            onClick={createTeam}
-            disabled={saving}
-            className="rounded-full border border-[#2f6df6]/50 bg-gradient-to-r from-[#2f6df6] to-[#22c55e] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:opacity-60"
-          >
-            {saving ? "Creating..." : "Create Team"}
-          </button>
+        <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Assigned Players</p>
+          <p className="mt-3 text-3xl font-black text-white">{visiblePlayers}</p>
         </div>
 
-        {message && (
-          <p className="mt-4 text-sm text-green-400">{message}</p>
-        )}
+        <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Head Coach Assigned</p>
+          <p className="mt-3 text-3xl font-black text-white">{visibleHeadCoachAssigned}</p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Assistant Coach Assigned</p>
+          <p className="mt-3 text-3xl font-black text-white">{visibleAssistantCoachAssigned}</p>
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-3xl border border-white/10 bg-[#0b1220]/70 p-5">
+        <div className="grid gap-4 lg:grid-cols-[1fr_180px_220px_180px_auto]">
+          <div>
+            <label
+              htmlFor="team-search"
+              className="text-xs uppercase tracking-[0.2em] text-slate-500"
+            >
+              Search teams
+            </label>
+            <input
+              id="team-search"
+              type="text"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search team, program, or age group"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#05070b]/60 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#60a5fa]"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="team-tier-filter"
+              className="text-xs uppercase tracking-[0.2em] text-slate-500"
+            >
+              Tier
+            </label>
+            <select
+              id="team-tier-filter"
+              value={tierFilter}
+              onChange={(event) => setTierFilter(event.target.value)}
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#05070b]/60 px-4 py-3 text-sm text-white outline-none transition focus:border-[#60a5fa]"
+            >
+              {tierOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option === "all" ? "All" : option}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="team-staffing-filter"
+              className="text-xs uppercase tracking-[0.2em] text-slate-500"
+            >
+              Staffing
+            </label>
+            <select
+              id="team-staffing-filter"
+              value={staffingFilter}
+              onChange={(event) => setStaffingFilter(event.target.value)}
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#05070b]/60 px-4 py-3 text-sm text-white outline-none transition focus:border-[#60a5fa]"
+            >
+              <option value="all">All</option>
+              <option value="fully_staffed">Fully staffed</option>
+              <option value="head_only">Head only</option>
+              <option value="needs_head">Needs head coach</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="team-active-filter"
+              className="text-xs uppercase tracking-[0.2em] text-slate-500"
+            >
+              Active
+            </label>
+            <select
+              id="team-active-filter"
+              value={activeFilter}
+              onChange={(event) => setActiveFilter(event.target.value)}
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-[#05070b]/60 px-4 py-3 text-sm text-white outline-none transition focus:border-[#60a5fa]"
+            >
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="w-full rounded-2xl border border-white/15 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#60a5fa] hover:text-[#93c5fd]"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="mt-8 overflow-x-auto rounded-3xl border border-white/10 bg-[#0b1220]/70">
@@ -180,88 +214,66 @@ export default function TeamsAdminClient({
             <tr>
               <th className="px-4 py-3">Team</th>
               <th className="px-4 py-3">Program</th>
+              <th className="px-4 py-3">Age Group</th>
               <th className="px-4 py-3">Tier</th>
-              <th className="px-4 py-3">Roster Limit</th>
-              <th className="px-4 py-3">Active</th>
-              <th className="px-4 py-3">Actions</th>
+              <th className="px-4 py-3">Players</th>
+              <th className="px-4 py-3">Head Coach</th>
+              <th className="px-4 py-3">Assistant Coach</th>
+              <th className="px-4 py-3">Status</th>
             </tr>
           </thead>
           <tbody>
-            {teams.map((team) => {
-              const program = Array.isArray(team.programs) ? team.programs[0] : team.programs;
+            {filteredTeams.map((team) => {
+              const teamLabel = team.display_name || team.team_name || "Unnamed Team";
 
               return (
-                <tr key={team.id} className="border-b border-white/5">
-                  <td className="px-4 py-4 font-semibold">
+                <tr
+                  key={team.id}
+                  className="border-b border-white/5 transition hover:bg-white/[0.03]"
+                >
+                  <td className="px-4 py-4 font-semibold text-white">
                     <Link
                       href={`/admin/teams/${team.id}`}
-                      className="text-[#60a5fa] transition hover:text-[#34d399]"
+                      className="text-white transition hover:text-[#93c5fd]"
                     >
-                      {team.display_name || team.team_name}
+                      {teamLabel}
                     </Link>
                   </td>
+                  <td className="px-4 py-4 text-slate-300">{team.program_name || "—"}</td>
+                  <td className="px-4 py-4 text-slate-300">{team.program_age_group || "—"}</td>
+                  <td className="px-4 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getTierClasses(
+                        team.tier
+                      )}`}
+                    >
+                      {team.tier || "—"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-slate-300">{team.assigned_player_count}</td>
                   <td className="px-4 py-4 text-slate-300">
-                    {program ? `${program.name} (${program.age_group})` : "—"}
+                    {team.head_coach_profile_id ? "Assigned" : "Open"}
                   </td>
-                  <td className="px-4 py-4">
-                    <select
-                      defaultValue={team.tier || "Silver"}
-                      onChange={(e) =>
-                        updateTeam(team.id, { tier: e.target.value })
-                      }
-                      className="rounded-xl border border-white/10 bg-[#05070b]/70 px-3 py-2 text-white outline-none"
-                    >
-                      {tierOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                  <td className="px-4 py-4 text-slate-300">
+                    {team.assistant_coach_profile_id ? "Assigned" : "Open"}
                   </td>
-                  <td className="px-4 py-4">
-                    <input
-                      defaultValue={team.roster_limit ?? ""}
-                      onBlur={(e) =>
-                        updateTeam(team.id, { rosterLimit: e.target.value || null })
-                      }
-                      className="w-24 rounded-xl border border-white/10 bg-[#05070b]/70 px-3 py-2 text-white outline-none"
-                    />
-                  </td>
-                  <td className="px-4 py-4">
-                    <label className="inline-flex items-center gap-2 text-slate-300">
-                      <input
-                        type="checkbox"
-                        defaultChecked={team.is_active}
-                        onChange={(e) =>
-                          updateTeam(team.id, { isActive: e.target.checked })
-                        }
-                      />
-                      {team.is_active ? "Yes" : "No"}
-                    </label>
-                  </td>
-                  <td className="px-4 py-4">
-                    <button
-                      type="button"
-                      onClick={() => deleteTeam(team.id)}
-                      className="rounded-full border border-red-500/40 bg-red-500/15 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20"
-                    >
-                      Delete
-                    </button>
+                  <td className="px-4 py-4 text-slate-300">
+                    {team.is_active ? "Active" : "Inactive"}
                   </td>
                 </tr>
               );
             })}
 
-            {teams.length === 0 && (
+            {filteredTeams.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
-                  No teams created yet.
+                <td colSpan={8} className="px-4 py-8 text-center text-slate-400">
+                  No teams match the current filters.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   );
 }

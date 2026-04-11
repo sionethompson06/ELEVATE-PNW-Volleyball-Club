@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type Team = {
   id: string;
   team_name: string;
   display_name?: string | null;
   age_group?: string | null;
+  tier?: string | null;
+  is_active?: boolean;
 };
 
 type Player = {
@@ -16,6 +18,19 @@ type Player = {
   age_group: string | null;
   current_team_id: string | null;
 };
+
+function tierRank(tier: string | null | undefined) {
+  switch ((tier || "").toLowerCase()) {
+    case "nationals":
+      return 1;
+    case "gold":
+      return 2;
+    case "silver":
+      return 3;
+    default:
+      return 99;
+  }
+}
 
 export default function PlayerAssignmentClient({
   players,
@@ -56,8 +71,27 @@ export default function PlayerAssignmentClient({
 
   function getEligibleTeams(playerAgeGroup: string | null) {
     if (!playerAgeGroup) return [];
-    return teams.filter((team) => team.age_group === playerAgeGroup);
+
+    return teams
+      .filter((team) => team.age_group === playerAgeGroup)
+      .sort((a, b) => {
+        const tierDiff = tierRank(a.tier) - tierRank(b.tier);
+        if (tierDiff !== 0) return tierDiff;
+
+        const aLabel = a.display_name || a.team_name || "";
+        const bLabel = b.display_name || b.team_name || "";
+        return aLabel.localeCompare(bLabel);
+      });
   }
+
+  const uniquePlayers = useMemo(() => {
+    const seenPlayers = new Set<string>();
+    return players.filter((player) => {
+      if (seenPlayers.has(player.id)) return false;
+      seenPlayers.add(player.id);
+      return true;
+    });
+  }, [players]);
 
   return (
     <div className="mt-10 rounded-3xl border border-white/10 bg-[#0b1220]/70 p-6">
@@ -75,9 +109,7 @@ export default function PlayerAssignmentClient({
         </div>
       </div>
 
-      {message && (
-        <p className="mt-4 text-sm text-green-400">{message}</p>
-      )}
+      {message && <p className="mt-4 text-sm text-green-400">{message}</p>}
 
       <div className="mt-6 overflow-x-auto rounded-3xl border border-white/10 bg-[#05070b]/40">
         <table className="min-w-full text-sm text-white">
@@ -90,20 +122,16 @@ export default function PlayerAssignmentClient({
             </tr>
           </thead>
           <tbody>
-            {players.map((player) => {
+            {uniquePlayers.map((player, playerIndex) => {
               const eligibleTeams = getEligibleTeams(player.age_group);
 
               return (
-                <tr key={player.id} className="border-b border-white/5">
+                <tr key={`${player.id}-${playerIndex}`} className="border-b border-white/5">
                   <td className="px-4 py-4 font-semibold text-white">
                     {player.first_name} {player.last_name}
                   </td>
-                  <td className="px-4 py-4 text-slate-300">
-                    {player.age_group || "—"}
-                  </td>
-                  <td className="px-4 py-4 text-slate-300">
-                    {getTeamName(player.current_team_id)}
-                  </td>
+                  <td className="px-4 py-4 text-slate-300">{player.age_group || "—"}</td>
+                  <td className="px-4 py-4 text-slate-300">{getTeamName(player.current_team_id)}</td>
                   <td className="px-4 py-4">
                     <select
                       defaultValue=""
@@ -113,8 +141,8 @@ export default function PlayerAssignmentClient({
                       className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-2 text-white outline-none"
                     >
                       <option value="">Select team</option>
-                      {eligibleTeams.map((team) => (
-                        <option key={team.id} value={team.id}>
+                      {eligibleTeams.map((team, teamIndex) => (
+                        <option key={`${team.id}-${teamIndex}`} value={team.id}>
                           {team.display_name || team.team_name}
                         </option>
                       ))}
@@ -124,7 +152,7 @@ export default function PlayerAssignmentClient({
               );
             })}
 
-            {players.length === 0 && (
+            {uniquePlayers.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
                   No players available for assignment.

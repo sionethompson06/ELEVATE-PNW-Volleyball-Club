@@ -42,12 +42,40 @@ export async function PATCH(
       nextTier = tier;
     }
 
+    if (nextTier && existingTeam.program_id) {
+      const { data: conflictingTeam, error: conflictError } = await supabase
+        .from("teams")
+        .select("id, display_name, team_name")
+        .eq("program_id", existingTeam.program_id)
+        .eq("tier", nextTier)
+        .neq("id", id)
+        .maybeSingle();
+
+      if (conflictError) {
+        return NextResponse.json({ error: conflictError.message }, { status: 500 });
+      }
+
+      if (conflictingTeam) {
+        const conflictLabel =
+          conflictingTeam.display_name || conflictingTeam.team_name || nextTier;
+
+        return NextResponse.json(
+          {
+            error: `A ${nextTier} team already exists for this program (${conflictLabel}). Choose a different tier.`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const program = Array.isArray(existingTeam.programs)
       ? existingTeam.programs[0]
       : existingTeam.programs;
 
     const nextDisplayName =
-      program?.age_group && nextTier ? `${program.age_group} ${nextTier}` : existingTeam.team_name;
+      program?.age_group && nextTier
+        ? `${program.age_group} ${nextTier}`
+        : existingTeam.team_name;
 
     const patch: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
@@ -76,7 +104,7 @@ export async function PATCH(
     }
 
     return NextResponse.json({ ok: true, team: data });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Unable to update team." }, { status: 400 });
   }
 }
@@ -115,7 +143,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ ok: true, message: "Team deleted successfully." });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Unable to delete team." }, { status: 400 });
   }
 }

@@ -28,10 +28,23 @@ const statusOptions = [
   "development_invite",
 ];
 
+const canonicalAgeGroups = ["12U", "13U", "14U", "15U", "16U", "17U", "18U"];
+
 function formatDate(dateString: string) {
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return "—";
   return date.toISOString().slice(0, 10);
+}
+
+function sortAgeGroups(values: string[]) {
+  return [...values].sort((a, b) => {
+    const getAge = (value: string) => {
+      const match = value.match(/(\d{1,2})\s*U/i);
+      return match ? Number(match[1]) : Number.POSITIVE_INFINITY;
+    };
+
+    return getAge(a) - getAge(b) || a.localeCompare(b);
+  });
 }
 
 export default function LeadsTable({ leads }: { leads: Lead[] }) {
@@ -48,6 +61,14 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
 
     window.location.reload();
   }
+
+  const ageGroupOptions = useMemo(() => {
+    const dataValues = leads
+      .map((lead) => lead.age_group)
+      .filter((value): value is string => Boolean(value));
+
+    return sortAgeGroups(Array.from(new Set([...canonicalAgeGroups, ...dataValues])));
+  }, [leads]);
 
   const filteredLeads = useMemo(() => {
     return leads.filter((lead) => {
@@ -106,9 +127,11 @@ export default function LeadsTable({ leads }: { leads: Lead[] }) {
           className="rounded-2xl border border-white/10 bg-[#05070b]/70 px-4 py-3 text-white outline-none transition focus:border-[#60a5fa]"
         >
           <option value="all">All age groups</option>
-          <option value="12U">12U</option>
-          <option value="14U">14U</option>
-          <option value="16U">16U</option>
+          {ageGroupOptions.map((ageGroup) => (
+            <option key={ageGroup} value={ageGroup}>
+              {ageGroup}
+            </option>
+          ))}
         </select>
       </div>
 
