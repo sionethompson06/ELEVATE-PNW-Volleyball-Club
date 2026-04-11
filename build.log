@@ -1,0 +1,52 @@
+
+> elevate-pnw-volleyball-club@0.1.0 build
+> next build
+
+▲ Next.js 16.2.2 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 9.2s
+  Running TypeScript ...
+  Finished TypeScript in 6.4s ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/18) ...
+  Generating static pages using 1 worker (4/18) 
+  Generating static pages using 1 worker (8/18) 
+  Generating static pages using 1 worker (13/18) 
+✓ Generating static pages using 1 worker (18/18) in 409ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin
+├ ○ /admin/coaches
+├ ○ /admin/families
+├ ○ /admin/leads
+├ ƒ /admin/leads/[id]
+├ ○ /admin/players
+├ ○ /admin/programs
+├ ○ /admin/teams
+├ ƒ /admin/teams/[id]
+├ ƒ /api/admin/coaches
+├ ƒ /api/admin/leads/[id]
+├ ƒ /api/admin/leads/[id]/convert
+├ ƒ /api/admin/leads/[id]/send-application
+├ ƒ /api/admin/players/[id]/assign-team
+├ ƒ /api/admin/teams
+├ ƒ /api/admin/teams/[id]
+├ ƒ /api/admin/teams/[id]/assign-coach
+├ ƒ /api/application/[token]
+├ ƒ /api/tryout-interest
+├ ƒ /application/[token]
+├ ○ /coaches
+├ ○ /login
+├ ○ /manifest.webmanifest
+├ ○ /parents
+└ ○ /players
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
